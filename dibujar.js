@@ -1,105 +1,103 @@
-const tablero = document.getElementById('zonadibujo');
+
 
 
 function dibujarTablero(filas, columnas) {
-    for (let i = 0; i < filas; i++) {
-        for (let j = 0; j < columnas; j++) {
-            const celda = document.createElement('div');
-            celda.style.border = '1px solid black';
-            celda.style.width = '10px';
-            celda.style.height = '10px';
-            celda.className = 'celda';
-            // celda.style.margin = '2px';
-            tablero.appendChild(celda);
+    const tablero = document.getElementById('zonadibujo'); //creación del tablero en el div #zonadibujo
+    document.querySelectorAll('p')[1].innerHTML = 'Haga CLICK en cualquier celda para activar/desactivar el Pincel.' //instruccion en la segunda etiqueta '<p></p>' del documento.
 
-
-        }
+    for (let i = 0; i < filas * columnas; i++) {
+        const celda = document.createElement('div');  // se crea una celda con un div
+        celda.style.borderTop = '1px solid black';     // estilos
+        celda.style.borderLeft = '1px solid black';    // estilos
+        celda.style.borderRight = '1px solid grey';   // estilos
+        celda.style.borderBottom = '1px solid grey';   // estilos
+        celda.style.width = '10px';                 // estilos
+        celda.style.height = '10px';                 // estilos
+        celda.style.margin = '1px';                    // estilos
+        celda.className = 'celda';    // asignación de la clase 'celda'
+        tablero.appendChild(celda);  //se añade cada celda al tablero
+        tablero.className = 'tablerodibujo'; // asignación de la clase para aplicar estilo del enunciado
     }
 
 
-
-    // tablero.style.boxSizing = 'content-box';
-    tablero.style.border = '3px solid black';
-    tablero.style.padding = '2px';
-    tablero.style.display = 'grid';
-    // tablero.style.gridTemplateColumns = 'repeat(30,0px)';
-    // tablero.style.gridTemplateRows = 'repeat(30,0px)';
-    // tablero.style.gap = '14px';
-    tablero.style.gridTemplateColumns = `repeat(${columnas},14px)`;
-    tablero.style.gridTemplateRows = `repeat(${filas},14px)`;
+    tablero.style.display = 'inline-grid';
+    tablero.style.gridTemplateColumns = `repeat(${columnas},14px)`;   //formato de columnas (número y espacio ocupado)
+    tablero.style.gridTemplateRows = `repeat(${filas},14px)`;         //formato de filas    (número y espacio ocupado)
 }
+
+//*************************************************************************************************************** */
+
 
 function seleccionarColor() {
-    console.log('entra en seleccionarColor')
-    const colores = document.querySelectorAll('[class*="color"]');
-    console.table(colores)
+
+    const colores = document.querySelectorAll('[class*="color"]');   //todos los elementos cuya clase comience por 'color' (color1, color2, color3, etc.)
+    const estadoDelPincel = document.querySelector('#pincel');   //     elemento div donde se muestra el estado del pincel (activado/desactivado). Se le añade el color actual del pincel también
+   // 
+
+
     colores.forEach(casillaColor => {
-        casillaColor.addEventListener('click', function () {
-            if (!casillaColor.classList.contains('seleccionado')) {
-                casillaColor.classList.add('seleccionado');
-
-            }
-            const color = getComputedStyle(casillaColor).backgroundColor;
-            console.log('color selecciionado:', color);
-            console.log('clic en ', this.textContent)
-            const estadoDelPincel = document.querySelector('#pincel');
-            estadoDelPincel.style.backgroundColor = color;
+        casillaColor.addEventListener('mouseover', function () { this.style.cursor = 'pointer' })  // cambia el puntero a la forma de mano (no se pide)
+        casillaColor.addEventListener('click', function () {                                       // programacion del evento click
+            estadoDelPincel.innerHTML = 'PINCEL DESACTIVADO';                                      // Cambio del mensaje por defecto a 'PINCEL DESACTIVADO'
+            colores.forEach(casilla => casilla.classList.remove('seleccionado'));                  // antes de asignar la clase 'seleccionado' se borra la clase 'seleccionado' de todas
+            casillaColor.classList.add('seleccionado');                                       // se añade la clase 'seleccionado'.
+            const claseColor = casillaColor.classList[0];                             //se obtiene y se guarda la clase referente al color (la primera de la lista de clases)
+            estadoDelPincel.className = claseColor;                                  // se asigna la clase referente al color al estado del pincel
 
 
-        })
-    })
-    // console.log(casillaColor.classList.value)
+        });
+    });
+
 }
 
-// function pintar() {
-//     const celda = document.querySelector('.celda');
-//     const estadoDelPincel = document.querySelector('#pincel')
-//     const color = document.getComputedStyle(estadoDelPincel).backgroundColor;
-//     celda.style.backgroundColor = color;
-    
-
-// }
+//**************************************************************************************************************** */
 
 
-function main() {
-    // const tablero = document.getElementById('zonadibujo');
-    
-    dibujarTablero(30,30)
-    seleccionarColor();
-
-    let pincelActivado = false;
-    const cuadrícula = document.querySelectorAll('.celda')
+function pintar() {
+    let pincelActivado = false;  //estado del pincel (activado/desactivado)
+    const cuadrícula = document.querySelectorAll('.celda') // cuadrícula = conjunto de celdas
 
 
     cuadrícula.forEach(celda => {
-        celda.addEventListener('click', function () {
-            const estadoDelPincel = document.querySelector('#pincel');
-            const color = getComputedStyle(estadoDelPincel).backgroundColor;
-            pincelActivado = !pincelActivado;
-            pincelActivado?
-             estadoDelPincel.innerHTML='PINCEL ACTIVADO'
-             : estadoDelPincel.innerHTML='PINCEL DESACTIVADO'
-                     
-            celda.style.backgroundColor = color;
+        celda.addEventListener('click', function () {               //programación del evento click de cada celda
+            const estadoDelPincel = document.querySelector('#pincel');  // elemento div donde se muestra el estado del pincel (activado/desactivado). Se le añade el color actual del pincel también
+            const color = getComputedStyle(estadoDelPincel).backgroundColor; // obtención del color
+
+            pincelActivado = !pincelActivado; //activación/desactivación del pincel con cada click
+            pincelActivado ?                  // si pincelActivado == true,
+                estadoDelPincel.innerHTML = 'PINCEL ACTIVADO'      // mensaje del estado del pincel
+                : estadoDelPincel.innerHTML = 'PINCEL DESACTIVADO'     //si pincelActivado == false  ---> mensaje contrario
+
+            celda.style.backgroundColor = color; //pinta la celda donde se hace click
         })
-      
+
     })
 
 
-     cuadrícula.forEach(celda => {
-                celda.addEventListener('mouseover', () => {
+    cuadrícula.forEach(celda => {
+        celda.addEventListener('mouseover', () => { //programación del evento mouseover para que se pinten las celdas afectadas
 
-                    const estadoDelPincel = document.querySelector('#pincel')
-                    const color = getComputedStyle(estadoDelPincel).backgroundColor;
-                    if (pincelActivado) {celda.style.backgroundColor = color};
-                    
-                })
-            })
+            const estadoDelPincel = document.querySelector('#pincel')
+            const color = getComputedStyle(estadoDelPincel).backgroundColor; //se obtiene la propiedad (color de fondo) aplicada en este momento 
+            if (pincelActivado) celda.style.backgroundColor = color; //se pinta del color si el pincel está activado.
 
-      
+
+        })
+    })
+
+}
+//***************************************************************************************************************** */
+function main() {               //función principal
+    const filas = 30;           // número de filas
+    const columnas = 30;        // número de columnas
+
+    dibujarTablero(filas, columnas);   // creación del tablero de dibujo
+    seleccionarColor();
+    pintar();
+
 }
 
-
+//********************************************************************************************************* */
 
 
 main();
